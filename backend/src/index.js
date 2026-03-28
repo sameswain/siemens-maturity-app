@@ -2,11 +2,17 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import Anthropic from "@anthropic-ai/sdk";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import fs from "fs";
 import db from "./db.js";
 import { computeScores } from "./scores.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3000"] }));
+app.use(cors());
 app.use(express.json());
 
 // ── Themes ────────────────────────────────────────────────────────────────────
@@ -356,6 +362,15 @@ Provide rich, detailed, consultant-quality output. This will be presented to Sie
     res.end(`\n\nError generating recommendations: ${err.message}`);
   }
 });
+
+// Serve frontend in production
+const frontendDist = join(__dirname, "../../frontend/dist");
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get("*", (_req, res) => {
+    res.sendFile(join(frontendDist, "index.html"));
+  });
+}
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
