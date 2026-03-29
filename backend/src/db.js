@@ -1,7 +1,13 @@
 import Database from "better-sqlite3";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 import { seedDatabase } from "./seed.js";
 
-const db = new Database("maturity.db");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const DB_PATH = process.env.DB_PATH || join(__dirname, "../maturity.db");
+
+const db = new Database(DB_PATH);
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
