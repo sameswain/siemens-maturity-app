@@ -1,7 +1,4 @@
-FROM node:18-alpine
-
-# Install build tools needed to compile better-sqlite3 native module
-RUN apk add --no-cache python3 make g++
+FROM node:18-bullseye-slim
 
 WORKDIR /app
 
